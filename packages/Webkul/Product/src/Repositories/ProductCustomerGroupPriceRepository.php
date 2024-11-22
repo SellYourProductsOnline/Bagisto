@@ -9,16 +9,13 @@ class ProductCustomerGroupPriceRepository extends Repository
 {
     /**
      * Specify Model class name.
-     *
-     * @return string
      */
-    function model(): string
+    public function model(): string
     {
         return 'Webkul\Product\Contracts\ProductCustomerGroupPrice';
     }
 
     /**
-     * @param  array  $data
      * @param  \Webkul\Product\Contracts\Product  $product
      * @return void
      */
@@ -30,7 +27,13 @@ class ProductCustomerGroupPriceRepository extends Repository
             foreach ($data['customer_group_prices'] as $customerGroupPriceId => $row) {
                 $row['customer_group_id'] = $row['customer_group_id'] == '' ? null : $row['customer_group_id'];
 
-                if (Str::contains($customerGroupPriceId, 'customer_group_price_')) {
+                $row['unique_id'] = implode('|', array_filter([
+                    $row['qty'],
+                    $product->id,
+                    $row['customer_group_id'],
+                ]));
+
+                if (Str::contains($customerGroupPriceId, 'price_')) {
                     $this->create(array_merge([
                         'product_id' => $product->id,
                     ], $row));
@@ -54,21 +57,13 @@ class ProductCustomerGroupPriceRepository extends Repository
      *
      * @return object
      */
-    public function checkInLoadedCustomerGroupPrice($product, $customerGroupId)
+    public function prices($product, $customerGroupId)
     {
-        $identifier = $product->id . '_' . $customerGroupId;
-
-        static $customerGroupPrices = [];
-
-        if (array_key_exists($identifier, $customerGroupPrices)) {
-            return $customerGroupPrices[$identifier];
-        }
-
-        $customerGroupPrices[$identifier] = $product->customer_group_prices->filter(function ($customerGroupPrice) use ($customerGroupId) {
+        $prices = $product->customer_group_prices->filter(function ($customerGroupPrice) use ($customerGroupId) {
             return $customerGroupPrice->customer_group_id == $customerGroupId
                 || is_null($customerGroupPrice->customer_group_id);
         });
 
-        return $customerGroupPrices[$identifier];
+        return $prices;
     }
 }

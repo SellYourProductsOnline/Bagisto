@@ -11,7 +11,7 @@ class Product extends BaseProduct implements Sitemapable
     /**
      * @return mixed
      */
-    public function toSitemapTag(): Url | string | array
+    public function toSitemapTag(): Url|string|array
     {
         if (
             ! $this->url_key
@@ -21,6 +21,6 @@ class Product extends BaseProduct implements Sitemapable
             return [];
         }
 
-        return route('shop.productOrCategory.index', $this->url_key);
+        return route('shop.product_or_category.index', $this->url_key);
     }
 }

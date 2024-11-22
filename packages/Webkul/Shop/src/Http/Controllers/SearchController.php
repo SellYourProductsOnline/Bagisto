@@ -2,38 +2,52 @@
 
 namespace Webkul\Shop\Http\Controllers;
 
-use Webkul\Product\Repositories\ProductRepository;
+use Webkul\Marketing\Repositories\SearchTermRepository;
+use Webkul\Product\Repositories\SearchRepository;
 
 class SearchController extends Controller
 {
     /**
      * Create a new controller instance.
      *
-     * @param  \Webkul\Product\Repositories\ProductRepository  $productRepository
      * @return void
      */
-    public function __construct(protected productRepository $productRepository)
-    {
-        parent::__construct();
-    }
+    public function __construct(
+        protected SearchTermRepository $searchTermRepository,
+        protected SearchRepository $searchRepository
+    ) {}
 
     /**
      * Index to handle the view loaded with the search results
-     * 
-     * @return \Illuminate\View\View 
+     *
+     * @return \Illuminate\View\View
      */
     public function index()
     {
-        $results = [];
-
-        request()->query->add([
-            'name'  => request('term'),
-            'sort'  => 'created_at',
-            'order' => 'desc',
+        $this->validate(request(), [
+            'query' => ['required', 'string', 'regex:/^[^\\\\]+$/u'],
         ]);
 
-        $results = $this->productRepository->getAll();
+        $searchTerm = $this->searchTermRepository->findOneWhere([
+            'term'       => request()->query('query'),
+            'channel_id' => core()->getCurrentChannel()->id,
+            'locale'     => app()->getLocale(),
+        ]);
 
-        return view($this->_config['view'])->with('results', $results->count() ? $results : null);
+        if ($searchTerm?->redirect_url) {
+            return redirect()->to($searchTerm->redirect_url);
+        }
+
+        return view('shop::search.index');
+    }
+
+    /**
+     * Upload image for product search with machine learning.
+     *
+     * @return string
+     */
+    public function upload()
+    {
+        return $this->searchRepository->uploadSearchImage(request()->all());
     }
 }

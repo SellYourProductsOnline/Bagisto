@@ -3,22 +3,16 @@
 namespace Webkul\Shop\Http\Controllers;
 
 use Illuminate\Support\Facades\Storage;
-use Webkul\Attribute\Repositories\AttributeRepository;
 use Webkul\Product\Repositories\ProductAttributeValueRepository;
 use Webkul\Product\Repositories\ProductDownloadableLinkRepository;
 use Webkul\Product\Repositories\ProductDownloadableSampleRepository;
 use Webkul\Product\Repositories\ProductRepository;
-
 
 class ProductController extends Controller
 {
     /**
      * Create a new controller instance.
      *
-     * @param  \Webkul\Product\Repositories\ProductRepository  $productRepository
-     * @param  \Webkul\Product\Repositories\ProductAttributeValueRepository  $productAttributeValueRepository
-     * @param  \Webkul\Product\Repositories\ProductDownloadableSampleRepository  $productDownloadableSampleRepository
-     * @param  \Webkul\Product\Repositories\ProductDownloadableLinkRepository  $productDownloadableLinkRepository
      * @return void
      */
     public function __construct(
@@ -26,10 +20,7 @@ class ProductController extends Controller
         protected ProductAttributeValueRepository $productAttributeValueRepository,
         protected ProductDownloadableSampleRepository $productDownloadableSampleRepository,
         protected ProductDownloadableLinkRepository $productDownloadableLinkRepository
-    )
-    {
-        parent::__construct();
-    }
+    ) {}
 
     /**
      * Download image or file.

@@ -3,17 +3,12 @@
 namespace Webkul\Core\Repositories;
 
 use Illuminate\Support\Facades\Storage;
-use Prettus\Repository\Traits\CacheableRepository;
 use Webkul\Core\Eloquent\Repository;
 
 class ChannelRepository extends Repository
 {
-    use CacheableRepository;
-
     /**
      * Specify model class name.
-     *
-     * @return string
      */
     public function model(): string
     {
@@ -23,7 +18,6 @@ class ChannelRepository extends Repository
     /**
      * Create.
      *
-     * @param  array  $data
      * @return \Webkul\Core\Contracts\Channel
      */
     public function create(array $data)
@@ -57,15 +51,12 @@ class ChannelRepository extends Repository
     /**
      * Update.
      *
-     * @param  array  $data
      * @param  int  $id
-     * @param  string  $attribute
      * @return \Webkul\Core\Contracts\Channel
      */
-    public function update(array $data, $id, $attribute = 'id')
+    public function update(array $data, $id)
     {
-
-        $channel = parent::update($data, $id, $attribute);
+        $channel = parent::update($data, $id);
 
         $channel->locales()->sync($data['locales']);
 
@@ -90,28 +81,20 @@ class ChannelRepository extends Repository
      */
     public function uploadImages($data, $channel, $type = 'logo')
     {
-        if (isset($data[$type])) {
-            foreach ($data[$type] as $imageId => $image) {
-                $file = $type . '.' . $imageId;
-                $dir = 'channel/' . $channel->id;
-
-                if (request()->hasFile($file)) {
-                    if ($channel->{$type}) {
-                        Storage::delete($channel->{$type});
-                    }
-
-                    $channel->{$type} = request()->file($file)->store($dir);
-                    $channel->save();
-                }
-            }
-        } else {
-            if ($channel->{$type}) {
-                Storage::delete($channel->{$type});
-            }
-
-            $channel->{$type} = null;
+        if (request()->hasFile($type)) {
+            $channel->{$type} = current(request()->file($type))->store('channel/'.$channel->id);
 
             $channel->save();
+        } else {
+            if (! isset($data[$type])) {
+                if (! empty($data[$type])) {
+                    Storage::delete($channel->{$type});
+                }
+
+                $channel->{$type} = null;
+
+                $channel->save();
+            }
         }
     }
 }

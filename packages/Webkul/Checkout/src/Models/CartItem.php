@@ -3,15 +3,15 @@
 namespace Webkul\Checkout\Models;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Database\Eloquent\Model;
-use Webkul\Product\Models\ProductProxy;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Webkul\Checkout\Database\Factories\CartItemFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Webkul\Checkout\Contracts\CartItem as CartItemContract;
-
+use Webkul\Checkout\Database\Factories\CartItemFactory;
+use Webkul\Product\Models\ProductProxy;
+use Webkul\Product\Type\AbstractType;
 
 class CartItem extends Model implements CartItemContract
 {
@@ -28,6 +28,26 @@ class CartItem extends Model implements CartItemContract
         'created_at',
         'updated_at',
     ];
+
+    protected $typeInstance;
+
+    /**
+     * Retrieve type instance
+     */
+    public function getTypeInstance(): AbstractType
+    {
+        if ($this->typeInstance) {
+            return $this->typeInstance;
+        }
+
+        $this->typeInstance = app(config('product_types.'.$this->type.'.class'));
+
+        if ($this->product) {
+            $this->typeInstance->setProduct($this->product);
+        }
+
+        return $this->typeInstance;
+    }
 
     public function product(): HasOne
     {
@@ -65,8 +85,6 @@ class CartItem extends Model implements CartItemContract
 
     /**
      * Create a new factory instance for the model
-     *
-     * @return Factory
      */
     protected static function newFactory(): Factory
     {

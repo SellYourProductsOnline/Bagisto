@@ -24,13 +24,7 @@ trait InvoiceReminder
      */
     private function getOverdueRemindersLimit()
     {
-        static $remindersLimit = 0;
-
-        if ($remindersLimit) {
-            return $remindersLimit;
-        }
-
-        return $remindersLimit = (int) core()->getConfigData('sales.invoice_settings.invoice_reminders.reminders_limit');
+        return (int) core()->getConfigData('sales.invoice_settings.invoice_reminders.reminders_limit');
     }
 
     /**
@@ -40,13 +34,7 @@ trait InvoiceReminder
      */
     private function getIntervalBetweenReminders()
     {
-        static $intervalBetweenReminders;
-
-        if ($intervalBetweenReminders) {
-            return $intervalBetweenReminders;
-        }
-
-        return $intervalBetweenReminders = core()->getConfigData('sales.invoice_settings.invoice_reminders.interval_between_reminders') ?: 'P1D';
+        return core()->getConfigData('sales.invoice_settings.invoice_reminders.interval_between_reminders') ?: 'P1D';
     }
 
     /**
@@ -90,11 +78,11 @@ trait InvoiceReminder
     public function scopeInOverdueAndRemindersLimit($query)
     {
         $query->where('state', '=', 'overdue');
-        
+
         // Filter by next_reminder_date
-        $query->where(function($query) {
+        $query->where(function ($query) {
             $query->where('next_reminder_at', '<=', now())
-            ->orWhereNull('next_reminder_at');
+                ->orWhereNull('next_reminder_at');
         });
 
         // If the core config have maximum limit of reminders

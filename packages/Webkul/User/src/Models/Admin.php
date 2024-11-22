@@ -7,13 +7,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
+use Laravel\Sanctum\HasApiTokens;
+use Webkul\Admin\Mail\Admin\ResetPasswordNotification;
 use Webkul\User\Contracts\Admin as AdminContract;
 use Webkul\User\Database\Factories\AdminFactory;
-use Webkul\User\Notifications\AdminResetPassword;
 
 class Admin extends Authenticatable implements AdminContract
 {
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -109,13 +110,11 @@ class Admin extends Authenticatable implements AdminContract
      */
     public function sendPasswordResetNotification($token)
     {
-        $this->notify(new AdminResetPassword($token));
+        $this->notify(new ResetPasswordNotification($token));
     }
 
     /**
      * Create a new factory instance for the model.
-     *
-     * @return \Illuminate\Database\Eloquent\Factories\Factory
      */
     protected static function newFactory(): Factory
     {

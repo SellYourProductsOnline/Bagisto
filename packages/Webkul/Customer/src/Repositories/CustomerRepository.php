@@ -2,33 +2,14 @@
 
 namespace Webkul\Customer\Repositories;
 
-use Illuminate\Container\Container;
 use Illuminate\Support\Facades\Storage;
 use Webkul\Core\Eloquent\Repository;
-use Webkul\Customer\Repositories\CustomerGroupRepository;
 use Webkul\Sales\Models\Order;
 
 class CustomerRepository extends Repository
 {
     /**
-     * Create a new repository instance.
-     *
-     * @param  \Webkul\Customer\Repositories\CustomerGroupRepository  $customerGroupRepository
-     * @param  \Illuminate\Container\Container  $container
-     * @return void
-     */
-    public function __construct(
-        protected CustomerGroupRepository $customerGroupRepository,
-        Container $container
-    )
-    {
-        parent::__construct($container);
-    }
-
-    /**
      * Specify model class name.
-     *
-     * @return string
      */
     public function model(): string
     {
@@ -39,11 +20,11 @@ class CustomerRepository extends Repository
      * Check if customer has order pending or processing.
      *
      * @param  \Webkul\Customer\Models\Customer
-     * @return boolean
+     * @return bool
      */
-    public function checkIfCustomerHasOrderPendingOrProcessing($customer)
+    public function haveActiveOrders($customer)
     {
-        return $customer->all_orders->pluck('status')->contains(function ($val) {
+        return $customer->orders->pluck('status')->contains(function ($val) {
             return $val === 'pending' || $val === 'processing';
         });
     }
@@ -55,30 +36,9 @@ class CustomerRepository extends Repository
      */
     public function getCurrentGroup()
     {
-        if ($customer = auth()->guard()->user()) {
-            return $customer->group;
-        }
-        
-        return $this->customerGroupRepository->getCustomerGuestGroup();
-    }
+        $customer = auth()->guard()->user();
 
-    /**
-     * Check if bulk customers, if they have order pending or processing.
-     *
-     * @param  array
-     * @return boolean
-     */
-    public function checkBulkCustomerIfTheyHaveOrderPendingOrProcessing($customerIds)
-    {
-        foreach ($customerIds as $customerId) {
-            $customer = $this->findOrFail($customerId);
-
-            if ($this->checkIfCustomerHasOrderPendingOrProcessing($customer)) {
-                return true;
-            }
-        }
-
-        return false;
+        return $customer->group ?? core()->getGuestCustomerGroup();
     }
 
     /**
@@ -86,7 +46,7 @@ class CustomerRepository extends Repository
      *
      * @param  array  $data
      * @param  \Webkul\Customer\Models\Customer  $customer
-     * @param  string $type
+     * @param  string  $type
      * @return void
      */
     public function uploadImages($data, $customer, $type = 'image')
@@ -95,8 +55,8 @@ class CustomerRepository extends Repository
             $request = request();
 
             foreach ($data[$type] as $imageId => $image) {
-                $file = $type . '.' . $imageId;
-                $dir = 'customer/' . $customer->id;
+                $file = $type.'.'.$imageId;
+                $dir = 'customer/'.$customer->id;
 
                 if ($request->hasFile($file)) {
                     if ($customer->{$type}) {

@@ -19,7 +19,7 @@ class SEO
             '@type'       => 'Product',
             'name'        => $product->name,
             'description' => $product->description,
-            'url'         => route('shop.productOrCategory.index', $product->url_key),
+            'url'         => route('shop.product_or_category.index', $product->url_key),
         ];
 
         if (core()->getConfigData('catalog.rich_snippets.products.show_sku')) {
@@ -27,7 +27,7 @@ class SEO
         }
 
         if (core()->getConfigData('catalog.rich_snippets.products.show_weight')) {
-            $data['image'] = $product->weight;
+            $data['weight'] = $product->weight;
         }
 
         if (core()->getConfigData('catalog.rich_snippets.products.show_categories')) {
@@ -171,7 +171,7 @@ class SEO
         if (core()->getConfigData('catalog.rich_snippets.categories.show_search_input_field')) {
             $data['potentialAction'] = [
                 '@type'       => 'SearchAction',
-                'target'      => config('app.url') . '/search/?term={search_term_string}',
+                'target'      => config('app.url').'/search/?term={search_term_string}',
                 'query-input' => 'required name=search_term_string',
             ];
         }

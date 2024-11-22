@@ -11,7 +11,7 @@ class Category extends BaseCategory implements Sitemapable
     /**
      * @return mixed
      */
-    public function toSitemapTag(): Url | string | array
+    public function toSitemapTag(): Url|string|array
     {
         if (
             ! $this->slug
@@ -20,6 +20,6 @@ class Category extends BaseCategory implements Sitemapable
             return [];
         }
 
-        return route('shop.productOrCategory.index', $this->slug);
+        return route('shop.product_or_category.index', $this->slug);
     }
 }

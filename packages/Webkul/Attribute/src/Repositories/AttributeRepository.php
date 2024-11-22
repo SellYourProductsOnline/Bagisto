@@ -8,11 +8,11 @@ use Webkul\Core\Eloquent\Repository;
 
 class AttributeRepository extends Repository
 {
+    protected $attributes = [];
+
     /**
      * Create a new repository instance.
      *
-     * @param  \Webkul\Attribute\Repositories\AttributeOptionRepository  $attributeOptionRepository
-     * @param  \Illuminate\Container\Container  $container
      * @return void
      */
     public function __construct(
@@ -24,8 +24,6 @@ class AttributeRepository extends Repository
 
     /**
      * Specify model class name.
-     *
-     * @return string
      */
     public function model(): string
     {
@@ -35,7 +33,6 @@ class AttributeRepository extends Repository
     /**
      * Create attribute.
      *
-     * @param  array  $data
      * @return \Webkul\Attribute\Contracts\Attribute
      */
     public function create(array $data)
@@ -62,18 +59,15 @@ class AttributeRepository extends Repository
     /**
      * Update attribute.
      *
-     * @param  array  $data
      * @param  int  $id
      * @param  string  $attribute
      * @return \Webkul\Attribute\Contracts\Attribute
      */
-    public function update(array $data, $id, $attribute = 'id')
+    public function update(array $data, $id)
     {
         $data = $this->validateUserInput($data);
 
         $attribute = $this->find($id);
-
-        $data['enable_wysiwyg'] = isset($data['enable_wysiwyg']);
 
         $attribute->update($data);
 
@@ -114,7 +108,7 @@ class AttributeRepository extends Repository
      */
     public function validateUserInput($data)
     {
-        if ($data['is_configurable']) {
+        if (isset($data['is_configurable'])) {
             $data['value_per_channel'] = $data['value_per_locale'] = 0;
         }
 
@@ -182,40 +176,6 @@ class AttributeRepository extends Repository
     }
 
     /**
-     * Get attribute by code.
-     *
-     * @param  string  $code
-     * @return \Webkul\Attribute\Contracts\Attribute
-     */
-    public function getAttributeByCode($code)
-    {
-        static $attributes = [];
-
-        if (array_key_exists($code, $attributes)) {
-            return $attributes[$code];
-        }
-
-        return $attributes[$code] = $this->findOneByField('code', $code);
-    }
-
-    /**
-     * Get attribute by id.
-     *
-     * @param  int  $id
-     * @return \Webkul\Attribute\Contracts\Attribute
-     */
-    public function getAttributeById($id)
-    {
-        static $attributes = [];
-
-        if (array_key_exists($id, $attributes)) {
-            return $attributes[$id];
-        }
-
-        return $attributes[$id] = $this->find($id);
-    }
-
-    /**
      * Get family attributes.
      *
      * @param  \Webkul\Attribute\Contracts\AttributeFamily  $attributeFamily
@@ -223,13 +183,11 @@ class AttributeRepository extends Repository
      */
     public function getFamilyAttributes($attributeFamily)
     {
-        static $attributes = [];
-
-        if (array_key_exists($attributeFamily->id, $attributes)) {
-            return $attributes[$attributeFamily->id];
+        if (array_key_exists($attributeFamily->id, $this->attributes)) {
+            return $this->attributes[$attributeFamily->id];
         }
 
-        return $attributes[$attributeFamily->id] = $attributeFamily->custom_attributes;
+        return $this->attributes[$attributeFamily->id] = $attributeFamily->custom_attributes;
     }
 
     /**

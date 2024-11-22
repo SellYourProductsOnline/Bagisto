@@ -20,21 +20,7 @@ class Virtual extends AbstractType
     ];
 
     /**
-     * These blade files will be included in product edit page.
-     *
-     * @var array
-     */
-    protected $additionalViews = [
-        'admin::catalog.products.accordians.inventories',
-        'admin::catalog.products.accordians.images',
-        'admin::catalog.products.accordians.videos',
-        'admin::catalog.products.accordians.categories',
-        'admin::catalog.products.accordians.channels',
-        'admin::catalog.products.accordians.product-links',
-    ];
-
-    /**
-     * Is a stokable product type.
+     * Is a stockable product type.
      *
      * @var bool
      */
@@ -58,13 +44,6 @@ class Virtual extends AbstractType
             return false;
         }
 
-        if (
-            is_callable(config('products.isSaleable')) &&
-            call_user_func(config('products.isSaleable'), $this->product) === false
-        ) {
-            return false;
-        }
-
         if ($this->haveSufficientQuantity(1)) {
             return true;
         }
@@ -74,12 +53,13 @@ class Virtual extends AbstractType
 
     /**
      * Have sufficient quantity.
-     *
-     * @param  int  $qty
-     * @return bool
      */
     public function haveSufficientQuantity(int $qty): bool
     {
+        if (! $this->product->manage_stock) {
+            return true;
+        }
+
         return $qty <= $this->totalQuantity();
     }
 

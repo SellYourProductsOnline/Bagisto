@@ -4,7 +4,6 @@ use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\ServiceProvider;
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Application Name
@@ -43,6 +42,18 @@ return [
     */
 
     'debug' => env('APP_DEBUG', false),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Debug Allowed IPs
+    |--------------------------------------------------------------------------
+    |
+    | This value is used to allow the debug mode only for the specified IPs.
+    | This is useful when you want to debug the application on the production
+    | server without enabling it for everyone.
+    */
+
+    'debug_allowed_ips' => env('APP_DEBUG_ALLOWED_IPS', null),
 
     /*
     |--------------------------------------------------------------------------
@@ -194,35 +205,40 @@ return [
         /**
          * Webkul package service providers.
          */
-        Webkul\Theme\Providers\ThemeServiceProvider::class,
-        Webkul\User\Providers\UserServiceProvider::class,
         Webkul\Admin\Providers\AdminServiceProvider::class,
-        Webkul\Ui\Providers\UiServiceProvider::class,
-        Webkul\Category\Providers\CategoryServiceProvider::class,
         Webkul\Attribute\Providers\AttributeServiceProvider::class,
+        Webkul\CartRule\Providers\CartRuleServiceProvider::class,
+        Webkul\CatalogRule\Providers\CatalogRuleServiceProvider::class,
+        Webkul\Category\Providers\CategoryServiceProvider::class,
+        Webkul\Checkout\Providers\CheckoutServiceProvider::class,
+        Webkul\CMS\Providers\CMSServiceProvider::class,
         Webkul\Core\Providers\CoreServiceProvider::class,
         Webkul\Core\Providers\EnvValidatorServiceProvider::class,
-        Webkul\Shop\Providers\ShopServiceProvider::class,
         Webkul\Customer\Providers\CustomerServiceProvider::class,
-        Webkul\Inventory\Providers\InventoryServiceProvider::class,
-        Webkul\Product\Providers\ProductServiceProvider::class,
-        Webkul\Checkout\Providers\CheckoutServiceProvider::class,
-        Webkul\Shipping\Providers\ShippingServiceProvider::class,
-        Webkul\Payment\Providers\PaymentServiceProvider::class,
-        Webkul\Paypal\Providers\PaypalServiceProvider::class,
-        Webkul\Sales\Providers\SalesServiceProvider::class,
-        Webkul\Tax\Providers\TaxServiceProvider::class,
-        Webkul\CatalogRule\Providers\CatalogRuleServiceProvider::class,
-        Webkul\CartRule\Providers\CartRuleServiceProvider::class,
-        Webkul\Rule\Providers\RuleServiceProvider::class,
-        Webkul\CMS\Providers\CMSServiceProvider::class,
-        Webkul\Velocity\Providers\VelocityServiceProvider::class,
-        Webkul\BookingProduct\Providers\BookingProductServiceProvider::class,
-        Webkul\SocialLogin\Providers\SocialLoginServiceProvider::class,
+        Webkul\DataGrid\Providers\DataGridServiceProvider::class,
+        Webkul\DataTransfer\Providers\DataTransferServiceProvider::class,
         Webkul\DebugBar\Providers\DebugBarServiceProvider::class,
+        Webkul\FPC\Providers\FPCServiceProvider::class,
+        Webkul\Installer\Providers\InstallerServiceProvider::class,
+        Webkul\Inventory\Providers\InventoryServiceProvider::class,
+        Webkul\MagicAI\Providers\MagicAIServiceProvider::class,
         Webkul\Marketing\Providers\MarketingServiceProvider::class,
         Webkul\Notification\Providers\NotificationServiceProvider::class,
-        Webkul\Sitemap\Providers\SitemapServiceProvider::class
+        Webkul\Payment\Providers\PaymentServiceProvider::class,
+        Webkul\Paypal\Providers\PaypalServiceProvider::class,
+        Webkul\Product\Providers\ProductServiceProvider::class,
+        Webkul\Rule\Providers\RuleServiceProvider::class,
+        Webkul\Sales\Providers\SalesServiceProvider::class,
+        Webkul\Shipping\Providers\ShippingServiceProvider::class,
+        Webkul\Shop\Providers\ShopServiceProvider::class,
+        Webkul\Sitemap\Providers\SitemapServiceProvider::class,
+        Webkul\SocialLogin\Providers\SocialLoginServiceProvider::class,
+        Webkul\SocialShare\Providers\SocialShareServiceProvider::class,
+        Webkul\Tax\Providers\TaxServiceProvider::class,
+        Webkul\Theme\Providers\ThemeServiceProvider::class,
+        Webkul\User\Providers\UserServiceProvider::class,
+
+        Sypo\Test\Providers\TestServiceProvider::class,
     ])->toArray(),
 
     /*
@@ -237,17 +253,16 @@ return [
     */
 
     'aliases' => Facade::defaultAliases()->merge([
-        'Captcha' => Webkul\Customer\Facades\Captcha::class,
-        'Cart' => Webkul\Checkout\Facades\Cart::class,
-        'Concord' => Konekt\Concord\Facades\Concord::class,
-        'Core' => Webkul\Core\Facades\Core::class,
-        'Datagrid' => Webkul\Ui\DataGrid\Facades\DataGrid::class,
-        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
-        'Helper' => Konekt\Concord\Facades\Helper::class,
-        'Image' => Intervention\Image\Facades\Image::class,
-        'PDF' => Barryvdh\DomPDF\Facade\Pdf::class,
+        'Captcha'      => Webkul\Customer\Facades\Captcha::class,
+        'Cart'         => Webkul\Checkout\Facades\Cart::class,
+        'Concord'      => Konekt\Concord\Facades\Concord::class,
+        'Core'         => Webkul\Core\Facades\Core::class,
+        'Excel'        => Maatwebsite\Excel\Facades\Excel::class,
+        'Helper'       => Konekt\Concord\Facades\Helper::class,
+        'Image'        => Intervention\Image\Facades\Image::class,
+        'PDF'          => Barryvdh\DomPDF\Facade\Pdf::class,
         'ProductImage' => Webkul\Product\Facades\ProductImage::class,
         'ProductVideo' => Webkul\Product\Facades\ProductVideo::class,
-        'Redis' => Illuminate\Support\Facades\Redis::class,
+        'Redis'        => Illuminate\Support\Facades\Redis::class,
     ])->toArray(),
 ];
